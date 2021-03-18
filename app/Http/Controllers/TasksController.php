@@ -46,7 +46,7 @@ class TasksController extends Controller
     {
         $task = new Task;
         $task->content = $request->content;
-        $task->save;
+        $task->save();
         
         return redirect('/');
     }
@@ -76,7 +76,7 @@ class TasksController extends Controller
     {
         $task = Task::findOrFail($id);
         
-        return view('task.edit', [
+        return view('tasks.edit', [
             'task' => $task,
         ]);
     }
