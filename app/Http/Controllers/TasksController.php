@@ -45,7 +45,7 @@ class TasksController extends Controller
     public function store(Request $request)
     {
         $task = new Task;
-        $task->status = $request->status
+        $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
         
@@ -94,7 +94,7 @@ class TasksController extends Controller
         // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
         // メッセージを更新
-        $task->status = $request->status
+        $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
 
