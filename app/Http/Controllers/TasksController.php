@@ -17,7 +17,6 @@ class TasksController extends Controller
      */
     public function index()
     {
-        //$tasks = Task::all();
         $data = [];
         if (\Auth::check()) { // 認証済みの場合
             // 認証済みユーザを取得
@@ -37,8 +36,6 @@ class TasksController extends Controller
 
         // Welcomeビューでそれらを表示
         return view('welcome', $data);
-        
-        
     }
 
     /**
@@ -88,6 +85,10 @@ class TasksController extends Controller
     {
         $task = Task::findOrFail($id);
         
+        if (\Auth::id() ===$task->user_id){
+            $task->show();
+        }
+        
         return view('tasks.show', [
             'task' => $task,
         ]);
@@ -102,6 +103,10 @@ class TasksController extends Controller
     public function edit($id)
     {
         $task = Task::findOrFail($id);
+        
+        if (\Auth::id() ===$task->user_id){
+            $task->edit();
+        }
         
         return view('tasks.edit', [
             'task' => $task,
@@ -124,7 +129,6 @@ class TasksController extends Controller
         // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
         // メッセージを更新
-        $task->user_id = \Auth::user()->id;
         $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
