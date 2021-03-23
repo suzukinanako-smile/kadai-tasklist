@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Task;    // 追加
 
+use App\User; 
+
 class TasksController extends Controller
 {
     /**
@@ -15,11 +17,28 @@ class TasksController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
+        //$tasks = Task::all();
+        $data = [];
+        if (\Auth::check()) { // 認証済みの場合
+            // 認証済みユーザを取得
+            $user = \Auth::user();
+            // ユーザの投稿の一覧を作成日時の降順で取得
+            // （後のChapterで他ユーザの投稿も取得するように変更しますが、現時点ではこのユーザの投稿のみ取得します）
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+            return view('tasks.index', [
+                'tasks' => $tasks,
+            ]);
+        }
+
+        // Welcomeビューでそれらを表示
+        return view('welcome', $data);
         
-        return view('tasks.index', [
-            'tasks' => $tasks,
-        ]);
+        
     }
 
     /**
@@ -29,6 +48,7 @@ class TasksController extends Controller
      */
     public function create()
     {
+        
         $task = new Task;
         
         return view('tasks.create', [
@@ -50,6 +70,7 @@ class TasksController extends Controller
         ]);
         
         $task = new Task;
+        $task->user_id = \Auth::user()->id;
         $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
@@ -103,6 +124,7 @@ class TasksController extends Controller
         // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
         // メッセージを更新
+        $task->user_id = Auth::user()->id;
         $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
@@ -121,6 +143,11 @@ class TasksController extends Controller
     {
         // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
+        // 認証済みユーザ（閲覧者）がその投稿の所有者である場合は、投稿を削除
+        if (\Auth::id() ===$task->user_id){
+            $task->delete();
+        }
+        
         // メッセージを削除
         $task->delete();
 
