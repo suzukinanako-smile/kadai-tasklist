@@ -10,11 +10,6 @@ use App\User;
 
 class TasksController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $data = [];
@@ -84,14 +79,12 @@ class TasksController extends Controller
     public function show($id)
     {
         $task = Task::findOrFail($id);
-        
         if (\Auth::id() ===$task->user_id){
-            $task->show();
-        }
         
         return view('tasks.show', [
             'task' => $task,
         ]);
+        }
     }
 
     /**
@@ -103,14 +96,11 @@ class TasksController extends Controller
     public function edit($id)
     {
         $task = Task::findOrFail($id);
-        
         if (\Auth::id() ===$task->user_id){
-            $task->edit();
-        }
-        
         return view('tasks.edit', [
             'task' => $task,
         ]);
+        }
     }
 
     /**
